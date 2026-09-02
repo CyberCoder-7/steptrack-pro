@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">StepTrack Pro</string>
+    <string name="notif_channel_tracking">Step Tracking</string>
+    <string name="notif_channel_reminders">Reminders and Goals</string>
+    <string name="notif_tracking_title">StepTrack Pro is tracking your steps</string>
+    <string name="daily_reminder_text">Time for a walk! Let\'s hit today\'s goal.</string>
+</resources>
