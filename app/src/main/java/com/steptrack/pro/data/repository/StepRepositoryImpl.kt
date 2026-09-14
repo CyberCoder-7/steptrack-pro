@@ -11,7 +11,6 @@ import com.steptrack.pro.util.DateUtils
 import com.steptrack.pro.util.StepCalculationUtils
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -28,7 +27,7 @@ class StepRepositoryImpl @Inject constructor(
     override fun observeToday(): Flow<DailyStep> {
         val today = DateUtils.today()
         return combine(
-            sensorManager.todaySteps.distinctUntilChanged(),
+            sensorManager.todaySteps,
             dao.observeByDate(today)
         ) { liveSteps, entity ->
             val goal = entity?.goal ?: Constants.DEFAULT_DAILY_GOAL
