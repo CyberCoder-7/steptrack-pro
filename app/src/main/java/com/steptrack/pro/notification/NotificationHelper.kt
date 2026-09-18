@@ -10,6 +10,7 @@ import androidx.core.app.NotificationCompat
 import com.steptrack.pro.MainActivity
 import com.steptrack.pro.R
 import com.steptrack.pro.util.Constants
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -20,7 +21,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class NotificationHelper @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     private val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -33,7 +34,7 @@ class NotificationHelper @Inject constructor(
             val tracking = NotificationChannel(
                 Constants.NOTIF_CHANNEL_TRACKING_ID,
                 context.getString(R.string.notif_channel_tracking),
-                NotificationManager.IMPORTANCE_LOW // silent, ongoing
+                NotificationManager.IMPORTANCE_LOW
             )
             val reminders = NotificationChannel(
                 Constants.NOTIF_CHANNEL_REMINDERS_ID,
@@ -53,7 +54,6 @@ class NotificationHelper @Inject constructor(
         return PendingIntent.getActivity(context, 0, intent, flags)
     }
 
-    /** Persistent, low-priority notification required to keep the foreground service alive. */
     fun buildTrackingNotification(steps: Int, goal: Int): android.app.Notification {
         val percent = if (goal > 0) ((steps.toFloat() / goal) * 100).toInt().coerceIn(0, 100) else 0
         return NotificationCompat.Builder(context, Constants.NOTIF_CHANNEL_TRACKING_ID)
