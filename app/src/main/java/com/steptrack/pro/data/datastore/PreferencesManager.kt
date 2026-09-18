@@ -11,6 +11,7 @@ import com.steptrack.pro.domain.model.AppSettings
 import com.steptrack.pro.domain.model.AppTheme
 import com.steptrack.pro.domain.model.DistanceUnit
 import com.steptrack.pro.util.Constants
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -25,7 +26,7 @@ private val Context.dataStore by preferencesDataStore(name = Constants.PREFS_DAT
  */
 @Singleton
 class PreferencesManager @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     private object Keys {
         val DAILY_GOAL = intPreferencesKey("daily_goal")
@@ -38,10 +39,7 @@ class PreferencesManager @Inject constructor(
         val GOAL_ACHIEVED_NOTIF_ENABLED = booleanPreferencesKey("goal_achieved_notif_enabled")
         val STRIDE_LENGTH = doublePreferencesKey("stride_length_meters")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
-        // Sensor calibration offset: accounts for step-counter drift on some OEMs
         val SENSOR_CALIBRATION_OFFSET = intPreferencesKey("sensor_calibration_offset")
-        // Raw hardware step-counter value at the moment "today" last reset,
-        // used to derive today's steps: hardwareTotal - baseline = todaySteps
         val STEP_BASELINE_TODAY = intPreferencesKey("step_baseline_today")
         val STEP_BASELINE_DATE = stringPreferencesKey("step_baseline_date")
     }
@@ -101,12 +99,6 @@ class PreferencesManager @Inject constructor(
         context.dataStore.edit { it[Keys.SENSOR_CALIBRATION_OFFSET] = offset }
     }
 
-    /**
-     * Reads today's baseline (hardware counter value at midnight). If the stored
-     * baseline date isn't today, the sensor manager should reset it using the
-     * current hardware reading, since Sensor.TYPE_STEP_COUNTER never resets itself
-     * (it counts since last device reboot, not since midnight).
-     */
     suspend fun getStepBaseline(): Pair<Int, String>? {
         val prefs = context.dataStore.data.first()
         val baseline = prefs[Keys.STEP_BASELINE_TODAY] ?: return null
