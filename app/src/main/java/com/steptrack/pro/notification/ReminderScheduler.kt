@@ -6,6 +6,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -18,7 +19,7 @@ import javax.inject.Singleton
  */
 @Singleton
 class ReminderScheduler @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
     fun scheduleDailyReminder(hour: Int, minute: Int) {
         val initialDelayMillis = computeInitialDelayMillis(hour, minute)
@@ -43,7 +44,6 @@ class ReminderScheduler @Inject constructor(
         WorkManager.getInstance(context).cancelUniqueWork(ReminderWorker.WORK_NAME)
     }
 
-    /** Milliseconds from now until the next occurrence of [hour]:[minute]. */
     private fun computeInitialDelayMillis(hour: Int, minute: Int): Long {
         val now = Calendar.getInstance()
         val target = Calendar.getInstance().apply {
